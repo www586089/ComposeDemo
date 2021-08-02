@@ -23,8 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import com.zfang.composedemo.logi.LoginActivity
+import com.zfang.composedemo.login.LoginActivity
 import com.zfang.composedemo.viewmodel.HelloViewModel
 
 class MainActivity : AppCompatActivity() {
