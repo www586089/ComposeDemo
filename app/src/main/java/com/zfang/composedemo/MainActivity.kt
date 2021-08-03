@@ -95,7 +95,9 @@ class MainActivity : AppCompatActivity() {
                     "# Location of the SDK. This is only used by Gradle.\n" +
                     "# For customization when using a Version Control System, please read the\n" +
                     "# header note.")
-            Button(onClick = { startActivity(Intent(this@MainActivity, LoginActivity::class.java)) }) {
+            Button(onClick = { startActivity(Intent(this@MainActivity, LoginActivity::class.java)) },
+                shape = MaterialTheme.shapes.small,
+            ) {
                 Text(text = "LoginScreen")
             }
         }

@@ -15,7 +15,7 @@ import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
@@ -39,7 +39,7 @@ class LoginActivity: AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { LoginScreen() }
+        setContent { LastLoginScreen() }
     }
 
     @Preview
@@ -49,7 +49,8 @@ class LoginActivity: AppCompatActivity() {
             Column(modifier = Modifier
                 .fillMaxWidth()
                 .paddingFrom(alignmentLine = FirstBaseline, before = 112.dp),
-                horizontalAlignment = Alignment.CenterHorizontally) {
+                horizontalAlignment = CenterHorizontally
+            ) {
                 Text(text = "点击下方头像登陆",
                     modifier = Modifier.fillMaxWidth(),
                     color = Color.Black,
@@ -78,7 +79,8 @@ class LoginActivity: AppCompatActivity() {
                     .fillMaxWidth()
                     .padding(4.dp),
                 verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally) {
+                horizontalAlignment = CenterHorizontally
+            ) {
                 Row {
                     ClickableText(text = getAnnotateString("换个账号登录", fontSize = 12.sp, color = Color(0xFF666666))) {
                         Log.e(TAG, "xxxx")
@@ -94,50 +96,7 @@ class LoginActivity: AppCompatActivity() {
                     }
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
-
-                val agree = remember {
-                    mutableStateOf(false)
-                }
-                ConstraintLayout {
-                    val (checkBox, spacer, text) = createRefs()
-
-                    Checkbox(checked = agree.value, onCheckedChange = {
-                        agree.value = it
-                        Log.e(TAG, "agree = $agree")
-                    }, modifier = Modifier.constrainAs(checkBox) {
-                        start.linkTo(parent.start)
-                        end.linkTo(spacer.start)
-                    })
-                    Spacer(modifier = Modifier
-                        .width(6.dp)
-                        .constrainAs(spacer) {
-                            start.linkTo(checkBox.end)
-                            end.linkTo(text.start)
-                        }
-                    )
-                    val tagService = "serviceAgreement"
-                    val tagPolicy = "privacyPolicy"
-                    val annotatedString = getPolicyString(tagService = tagService, tagPolicy = tagPolicy)
-                    ClickableText(
-                        text = annotatedString,
-                        modifier = Modifier.constrainAs(text) {
-                        top.linkTo(checkBox.top)
-                        bottom.linkTo(checkBox.bottom)
-                        start.linkTo(spacer.end)
-                    }) { offset ->
-                        Log.e(TAG, "offset = $offset")
-                        annotatedString.getStringAnnotations(tagService, start = offset, end = offset).firstOrNull()?.let {
-                            //点击了服务协议
-                            Log.e(TAG, "serviceAgreement = ${it.item}")
-                        }
-                        annotatedString.getStringAnnotations(tagPolicy, start = offset, end = offset).firstOrNull()?.let {
-                            //点击了隐私政策
-                            Log.e(TAG, "privacyPolicy = ${it.item}")
-                        }
-                    }
-                }
-                Spacer(modifier = Modifier.height(32.dp))
+                BottomPolicyArea()
             }
         }
     }
@@ -148,9 +107,8 @@ class LoginActivity: AppCompatActivity() {
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(top = 120.dp)
-                .background(Color.DarkGray),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(top = 120.dp),
+            horizontalAlignment = CenterHorizontally
         ) {
             Image(painter = painterResource(id = R.mipmap.ic_launcher), contentDescription = null, 
                 modifier = Modifier
@@ -159,7 +117,7 @@ class LoginActivity: AppCompatActivity() {
                     .clip(RoundedCornerShape(8.dp))
             )
 
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(120.dp))
             
             Column() {
                 val loginStr = buildAnnotatedString {
@@ -170,17 +128,107 @@ class LoginActivity: AppCompatActivity() {
                 val colors = listOf(Color(0xffBA90FF), Color(0xffFF86E3))
                 TextButton(
                     onClick = {
+                       Log.e(TAG, "Phone Login")
                     },
                     modifier = Modifier
                         .width(260.dp)
                         .height(50.dp)
-                        .background(brush = Brush.linearGradient(colors)),
-                    shape = RoundedCornerShape(25.dp)
+                        .background(
+                            brush = Brush.linearGradient(colors),
+                            shape = RoundedCornerShape(25.dp)
+                        )
+                        .clip(RoundedCornerShape(25.dp))
                 ) {
                     Text(text = loginStr)
                 }
             }
+
+            Column(modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth()
+                .background(Color.White), verticalArrangement = Arrangement.Bottom, horizontalAlignment = CenterHorizontally
+            ) {
+                ConstraintLayout {
+                    val (otherWayLogin, spacer, feq) = createRefs()
+                    ClickableText(text = getAnnotateString("其他登录方式", fontSize = 12.sp, color = Color(0xFF666666)),
+                    modifier = Modifier.constrainAs(otherWayLogin) {
+                        start.linkTo(parent.start)
+                        end.linkTo(spacer.start)
+                    }) {
+                        Log.e(TAG, "Other login way")
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .width(0.5.dp)
+                            .height(7.dp)
+                            .background(Color(0xFFD8D8D8))
+                            .constrainAs(spacer) {
+                                start.linkTo(otherWayLogin.end, margin = 10.dp)
+                                end.linkTo(feq.start, margin = 10.dp)
+                                top.linkTo(otherWayLogin.top)
+                                bottom.linkTo(otherWayLogin.bottom)
+                            }
+                    )
+                    ClickableText(text = getAnnotateString("遇到问题?", fontSize = 12.sp, color = Color(0xFF666666)),
+                    modifier = Modifier.constrainAs(feq) {
+                        start.linkTo(spacer.end)
+                        end.linkTo(parent.end)
+                    }) {
+                        Log.e(TAG, "login, feq")
+                    }
+                }
+
+                BottomPolicyArea()
+            }
         }
+    }
+
+    @Composable
+    fun BottomPolicyArea() {
+        Spacer(modifier = Modifier.height(40.dp))
+
+        val agree = remember {
+            mutableStateOf(false)
+        }
+        ConstraintLayout {
+            val (checkBox, spacer, text) = createRefs()
+
+            Checkbox(checked = agree.value, onCheckedChange = {
+                agree.value = it
+                Log.e(TAG, "agree = $agree")
+            }, modifier = Modifier.constrainAs(checkBox) {
+                start.linkTo(parent.start)
+                end.linkTo(spacer.start)
+            })
+            Spacer(modifier = Modifier
+                .width(6.dp)
+                .constrainAs(spacer) {
+                    start.linkTo(checkBox.end)
+                    end.linkTo(text.start)
+                }
+            )
+            val tagService = "serviceAgreement"
+            val tagPolicy = "privacyPolicy"
+            val annotatedString = getPolicyString(tagService = tagService, tagPolicy = tagPolicy)
+            ClickableText(
+                text = annotatedString,
+                modifier = Modifier.constrainAs(text) {
+                    top.linkTo(checkBox.top)
+                    bottom.linkTo(checkBox.bottom)
+                    start.linkTo(spacer.end)
+                }) { offset ->
+                Log.e(TAG, "offset = $offset")
+                annotatedString.getStringAnnotations(tagService, start = offset, end = offset).firstOrNull()?.let {
+                    //点击了服务协议
+                    Log.e(TAG, "serviceAgreement = ${it.item}")
+                }
+                annotatedString.getStringAnnotations(tagPolicy, start = offset, end = offset).firstOrNull()?.let {
+                    //点击了隐私政策
+                    Log.e(TAG, "privacyPolicy = ${it.item}")
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(32.dp))
     }
 
     private fun getAnnotateString(text: String, color: Color, fontSize: TextUnit) = buildAnnotatedString {
